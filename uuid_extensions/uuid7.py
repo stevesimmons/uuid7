@@ -33,48 +33,48 @@ def uuid7(
     _last_as_of=[0, 0, 0, 0],
 ) -> Union[uuid.UUID, str, int, bytes]:
     """
-        UUID v7, following the proposed extension to RFC4122 described in
-        https://www.ietf.org/id/draft-peabody-dispatch-new-uuid-format-02.html.
-        All representations (string, byte array, int) sort chronologically,
-        with a potential time resolution of 50ns (if the system clock
-        supports this).
+    UUID v7, following the proposed extension to RFC4122 described in
+    https://www.ietf.org/id/draft-peabody-dispatch-new-uuid-format-02.html.
+    All representations (string, byte array, int) sort chronologically,
+    with a potential time resolution of 50ns (if the system clock
+    supports this).
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        ns      - Optional integer with the whole number of nanoseconds
-                  since Unix epoch, to set the "as of" timestamp.
-                  As a special case, uuid7(ns=0) returns the zero UUID.
+    ns      - Optional integer with the whole number of nanoseconds
+                since Unix epoch, to set the "as of" timestamp.
+                As a special case, uuid7(ns=0) returns the zero UUID.
 
-        as_type - Optional string to return the UUID in a different format.
-                  A uuid.UUID (version 7, variant 0x10) is returned unless
-                  this is one of 'str', 'int', 'hex' or 'bytes'.
+    as_type - Optional string to return the UUID in a different format.
+                A uuid.UUID (version 7, variant 0x10) is returned unless
+                this is one of 'str', 'int', 'hex' or 'bytes'.
 
-        time_func - Set the time function, which must return integer
-                  nanoseconds since the Unix epoch, midnight on 1-Jan-1970.
-                  Defaults to time.time_ns(). This is exposed because
-                  time.time_ns() may have a low resolution on Windows.
+    time_func - Set the time function, which must return integer
+                nanoseconds since the Unix epoch, midnight on 1-Jan-1970.
+                Defaults to time.time_ns(). This is exposed because
+                time.time_ns() may have a low resolution on Windows.
 
-        _last and _last_as_of - Used internally to trigger incrementing a
-                  sequence counter when consecutive calls have the same time
-                  values. The values [t1, t2, t3, seq] are described below.
+    _last and _last_as_of - Used internally to trigger incrementing a
+                sequence counter when consecutive calls have the same time
+                values. The values [t1, t2, t3, seq] are described below.
 
-        Returns
-        -------
+    Returns
+    -------
 
-        A UUID object, or if as_type is specified, a string, int or
-        bytes of length 16.
+    A UUID object, or if as_type is specified, a string, int or
+    bytes of length 16.
 
-        Implementation notes
-        --------------------
+    Implementation notes
+    --------------------
 
-        The 128 bits in the UUID are allocated as follows:
-        - 36 bits of whole seconds
-        - 24 bits of fractional seconds, giving approx 50ns resolution
-        - 14 bits of sequential counter, if called repeatedly in same time tick
-        - 48 bits of randomness
-        plus, at locations defined by RFC4122, 4 bits for the
-        uuid version (0b111) and 2 bits for the uuid variant (0b10).
+    The 128 bits in the UUID are allocated as follows:
+    - 36 bits of whole seconds
+    - 24 bits of fractional seconds, giving approx 50ns resolution
+    - 14 bits of sequential counter, if called repeatedly in same time tick
+    - 48 bits of randomness
+    plus, at locations defined by RFC4122, 4 bits for the
+    uuid version (0b111) and 2 bits for the uuid variant (0b10).
 
              0                   1                   2                   3
              0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -88,29 +88,29 @@ def uuid7(
     rand    |                          rand (32 bits)                       |
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-        Indicative timings:
-        - uuid.uuid4()            2.4us
-        - uuid7()                 3.7us
-        - uuid7(as_type='int')    1.6us
-        - uuid7(as_type='str')    2.5us
+    Indicative timings:
+    - uuid.uuid4()            2.4us
+    - uuid7()                 3.7us
+    - uuid7(as_type='int')    1.6us
+    - uuid7(as_type='str')    2.5us
 
-        Examples
-        --------
+    Examples
+    --------
 
-        >>> uuid7()
-        UUID('061cb26a-54b8-7a52-8000-2124e7041024')
+    >>> uuid7()
+    UUID('061cb26a-54b8-7a52-8000-2124e7041024')
 
-        >>> uuid7(0)
-        UUID('00000000-0000-0000-0000-00000000000')
+    >>> uuid7(0)
+    UUID('00000000-0000-0000-0000-00000000000')
 
-        >>> for fmt in ('bytes', 'hex', 'int', 'str', 'uuid', None):
-        ...     print(fmt, repr(uuid7(as_type=fmt)))
-        bytes b'\x06\x1c\xb8\xfe\x0f\x0b|9\x80\x00\tjt\x85\xb3\xbb'
-        hex '061cb8fe0f0b7c3980011863b956b758'
-        int 8124504378724980906989670469352026642
-        str '061cb8fe-0f0b-7c39-8003-d44a7ee0bdf6'
-        uuid UUID('061cb8fe-0f0b-7c39-8004-0489578299f6')
-        None UUID('061cb8fe-0f0f-7df2-8000-afd57c2bf446')
+    >>> for fmt in ('bytes', 'hex', 'int', 'str', 'uuid', None):
+    ...     print(fmt, repr(uuid7(as_type=fmt)))
+    bytes b'\x06\x1c\xb8\xfe\x0f\x0b|9\x80\x00\tjt\x85\xb3\xbb'
+    hex '061cb8fe0f0b7c3980011863b956b758'
+    int 8124504378724980906989670469352026642
+    str '061cb8fe-0f0b-7c39-8003-d44a7ee0bdf6'
+    uuid UUID('061cb8fe-0f0b-7c39-8004-0489578299f6')
+    None UUID('061cb8fe-0f0f-7df2-8000-afd57c2bf446')
     """
     if ns is None:
         ns = time_func()
