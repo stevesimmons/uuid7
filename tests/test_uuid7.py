@@ -4,7 +4,7 @@ Tests for `uuid7` package.
 """
 import time
 
-from uuid7 import uuid7, uuid7str
+from uuid_extensions import uuid7, uuid7str
 
 def test_uuid7():
     """

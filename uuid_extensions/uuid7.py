@@ -3,7 +3,7 @@ Implementation of UUID v7 per the October 2021 draft update
 to RFC4122 from 2005:
 https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format
 
-Stephen Simmons, 2021-12-27
+Stephen Simmons, v0.1.0, 2021-12-27
 """
 
 __all__ = (
@@ -24,12 +24,6 @@ import uuid
 # Expose function used by uuid7() to get current time in nanoseconds
 # since the Unix epoch.
 time_ns = time.time_ns
-
-
-def uuid7str(ns: Optional[int] = None) -> str:
-    "uuid7() as a string without creating a UUID object first."
-    return uuid7(ns, as_type="str")  # type: ignore
-
 
 def uuid7(
     ns: Optional[int] = None,
@@ -173,6 +167,11 @@ def uuid7(
         return uuid_int.to_bytes(16, "big")
     else:
         return uuid.UUID(int=uuid_int)
+
+
+def uuid7str(ns: Optional[int] = None) -> str:
+    "uuid7() as a string without creating a UUID object first."
+    return uuid7(ns, as_type="str")  # type: ignore
 
 
 def check_timing_precision(
