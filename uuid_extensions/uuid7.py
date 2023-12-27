@@ -18,16 +18,62 @@ import datetime
 import os
 import struct
 import time
-from typing import Callable, Optional, Union
 import uuid
+from typing import Callable, Literal, Optional, Union, overload
 
 # Expose function used by uuid7() to get current time in nanoseconds
 # since the Unix epoch.
 time_ns = time.time_ns
 
+
+@overload
 def uuid7(
     ns: Optional[int] = None,
-    as_type: Optional[str] = None,
+    *,
+    as_type: Literal[None] = None,
+    time_func: Callable[[], int] = time_ns,
+    _last=[],
+    _last_as_of=[],
+) -> uuid.UUID: ...
+
+
+@overload
+def uuid7(
+    ns: Optional[int] = None,
+    *,
+    as_type: Literal["str"],
+    time_func: Callable[[], int] = time_ns,
+    _last=[],
+    _last_as_of=[],
+) -> str: ...
+
+
+@overload
+def uuid7(
+    ns: Optional[int] = None,
+    *,
+    as_type: Literal["int"],
+    time_func: Callable[[], int] = time_ns,
+    _last=[],
+    _last_as_of=[],
+) -> int: ...
+
+
+@overload
+def uuid7(
+    ns: Optional[int] = None,
+    *,
+    as_type: Literal["bytes"],
+    time_func: Callable[[], int] = time_ns,
+    _last=[],
+    _last_as_of=[],
+) -> bytes: ...
+
+
+def uuid7(
+    ns: Optional[int] = None,
+    *,
+    as_type: Literal[None, "str", "int", "hex", "bytes"] = None,
     time_func: Callable[[], int] = time_ns,
     _last=[0, 0, 0, 0],
     _last_as_of=[0, 0, 0, 0],
@@ -205,8 +251,10 @@ def check_timing_precision(
     timing_funcs = [
         ("time.time_ns()", time.time_ns),
         ("time.perf_counter_ns()", time.perf_counter_ns),
-        ("datetime.datetime.utcnow", lambda: int(
-            datetime.datetime.utcnow().timestamp() * 1_000_000_000)),
+        (
+            "datetime.datetime.utcnow",
+            lambda: int(datetime.datetime.utcnow().timestamp() * 1_000_000_000),
+        ),
     ]
     if timing_func is not None:
         timing_funcs.append(("user-supplied", timing_func))
@@ -225,9 +273,9 @@ def check_timing_precision(
         precision_ns = elapsed_ns / len(values)
         ideal_precision_ns = elapsed_ns / ctr
         lines.append(
-            f"{desc} has a timing precision of {precision_ns:0,.0f}ns \
-rather than {ideal_precision_ns:0,.0f}ns ({ctr:,} samples of which \
-{len(values):,} are distinct, in {elapsed_ns / 1_000_000_000:0.2f}s)"
+            f"{desc} has a timing precision of {precision_ns:0,.0f}ns rather than"
+            f" {ideal_precision_ns:0,.0f}ns ({ctr:,} samples of which"
+            f" {len(values):,} are distinct, in {elapsed_ns / 1_000_000_000:0.2f}s)"
         )
 
     return "\n".join(lines)
@@ -276,8 +324,8 @@ def timestamp_ns(
         return None
     else:
         raise ValueError(
-            f"{str(s)} is a version {uuid_version} UUID, \
-not v7 so we cannot extract the timestamp."
+            f"{str(s)} is a version {uuid_version} UUID, not v7 so we cannot extract"
+            " the timestamp."
         )
 
 
