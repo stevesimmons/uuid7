@@ -54,6 +54,9 @@ lint/black: ## check style with black
 
 lint: lint/flake8 lint/black ## check style
 
+typecheck:
+	mypy uuid_extensions
+
 test: ## run tests quickly with the default Python
 	pytest
 
