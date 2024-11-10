@@ -18,16 +18,35 @@ import datetime
 import os
 import struct
 import time
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, Union, overload
 import uuid
+
+from typing_extensions import Literal
 
 # Expose function used by uuid7() to get current time in nanoseconds
 # since the Unix epoch.
 time_ns = time.time_ns
 
+
+@overload
+def uuid7(ns: Optional[int] = None) -> uuid.UUID: ...
+
+
+@overload
+def uuid7(ns: Optional[int] = None, as_type: Literal["str"] = ...) -> str: ...
+
+
+@overload
+def uuid7(ns: Optional[int] = None, as_type: Literal["int"] = ...) -> int: ...
+
+
+@overload
+def uuid7(ns: Optional[int] = None, as_type: Literal["bytes"] = ...) -> bytes: ...
+
+
 def uuid7(
     ns: Optional[int] = None,
-    as_type: Optional[str] = None,
+    as_type: Literal[None, "str", "int", "bytes"] = None,
     time_func: Callable[[], int] = time_ns,
     _last=[0, 0, 0, 0],
     _last_as_of=[0, 0, 0, 0],
@@ -205,8 +224,10 @@ def check_timing_precision(
     timing_funcs = [
         ("time.time_ns()", time.time_ns),
         ("time.perf_counter_ns()", time.perf_counter_ns),
-        ("datetime.datetime.utcnow", lambda: int(
-            datetime.datetime.utcnow().timestamp() * 1_000_000_000)),
+        (
+            "datetime.datetime.utcnow",
+            lambda: int(datetime.datetime.utcnow().timestamp() * 1_000_000_000),
+        ),
     ]
     if timing_func is not None:
         timing_funcs.append(("user-supplied", timing_func))
@@ -265,9 +286,7 @@ def timestamp_ns(
         # uuid_variant = (bits[3] >> 62) & 0x3
         whole_secs = (bits[0] << 4) + (bits[1] >> 12)
         frac_binary = (
-            ((bits[1] & 0x0FFF) << 26)
-            + ((bits[2] & 0x0FFF) << 14)
-            + ((bits[3] & 0x3FFF))
+            ((bits[1] & 0x0FFF) << 26) + ((bits[2] & 0x0FFF) << 14) + (bits[3] & 0x3FFF)
         )
         frac_ns, _ = divmod(frac_binary * 1_000_000_000, 1 << 38)
         ns_since_epoch = whole_secs * 1_000_000_000 + frac_ns
