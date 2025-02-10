@@ -11,7 +11,7 @@ from typing import Callable, Optional, Union
 from .id25 import ID25_ALPHABET_LOWER, ID25_ALPHABET_UPPER
 
 
-def to_datetime(
+def uuid7_to_datetime(
     uuid7: Union[str, uuid.UUID, int],
     ms_only: bool = False,
 ) -> Optional[datetime.datetime]:
@@ -25,7 +25,7 @@ def to_datetime(
     - ID25 format string, length 25 from either the upper case or lower case 35-character alphabet.
 
     Usage:
-    >>> to_datetime("1eb22fe4-3f0c-62b1-a88c-8dc55231702f")
+    >>> uuid7_to_datetime("1eb22fe4-3f0c-62b1-a88c-8dc55231702f")
     datetime.datetime(2020, 11, 10, 2, 41, 42, 182162)
     """
     ns_since_epoch = timestamp_ns(uuid7, ms_only=ms_only)
