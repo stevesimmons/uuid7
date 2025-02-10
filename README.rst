@@ -38,10 +38,10 @@ plus, at locations defined by RFC4122, 4 bits for the uuid version (0b111) and 2
 
 Indicative timings:
 
-* `uuid.uuid4()` - 2.4us
-* `uuid7()` - 3.7us
-* `uuid7(as_type='int')` - 1.6us
-* `uuid7(as_type='str')` - 2.5us
+* `uuid4()` - 2.1us, imported from `uuid`
+* `uuid7()` - 2.3us
+* `uuid7int()` - 1.5us
+* `uuid7str()` - 2.4us
 
 Installation
 ------------

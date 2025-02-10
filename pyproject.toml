@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uuid7"
+version = "1.0.0-alpha"
+description = "UUIDv7"
+dependencies = [
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "bump2version",
+    "flake8",
+    "isort",
+    "mypy",
+    "pytest",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/stevesimmons/uuid7"
+
+[project.license]
+text = "MIT"
